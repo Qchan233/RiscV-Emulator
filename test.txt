@@ -1,0 +1,8 @@
+li x1 1
+li x2 101
+jal x1 .sum
+jal x0 .end
+.sum
+li x5 123
+ret
+.end	
