@@ -1,8 +1,22 @@
-li x1 1
-li x2 101
-jal x1 .sum
+li x10 10
+jal x1 .fact
 jal x0 .end
-.sum
-li x5 123
+.fact
+addi x2 x2 2
+sw x1 -1(x2)
+sw x10 0(x2)
+subi x5 x10 1
+bge x5 x0 .L1
+addi x10 x0 1
+subi x2 x2 2
 ret
-.end	
+.L1 
+subi x10 x10 1
+jal x1 .fact
+addi x6 x10 0
+lw x10 0(x2)
+lw x1 -1(x2)
+subi x2 x2 2
+mul x10 x10 x6
+ret
+.end

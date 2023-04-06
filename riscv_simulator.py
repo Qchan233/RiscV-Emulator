@@ -18,6 +18,7 @@ class riscv_simulator:
             "bne": self.bne_func,
             "blt": self.blt_func,
             "bgt": self.bgt_func,
+            "bge": self.bge_func,
             "jal": self.jal_func,
             "ret": self.ret_func
         }
@@ -27,7 +28,8 @@ class riscv_simulator:
     def load_program(self, path):
         try:
             with open(path, "r") as f:
-                self.lines = [line.strip() for line in f.readlines() ]
+                self.lines = [line.strip() for line in f.readlines()]
+                self.lines = [line for line in self.lines if len(line) > 0]
                 self.program_lines = [line for line in self.lines if line[0] != '.']
         except:
             print("The file you are trying to open does not exist")
@@ -50,8 +52,8 @@ class riscv_simulator:
     def execute_program(self):
         self.preprocess()
         while self.pc < len(self.program_lines):
-            if self.is_debugging:
-                print(f"Executing line {self.pc}: {self.program_lines[self.pc]}")
+            # if self.is_debugging:
+            #     print(f"Executing line {self.pc}: {self.program_lines[self.pc]}")
             self.execute_line(self.program_lines[self.pc])
             self.pc += 1
     
@@ -118,20 +120,23 @@ class riscv_simulator:
         if self.registers[int(rs1[1:])] > self.registers[int(rs2[1:])]:
             self.pc = self.symbol_table[label] - 1
     
+    def bge_func(self, rs1, rs2, label):
+        if self.registers[int(rs1[1:])] >= self.registers[int(rs2[1:])]:
+            self.pc = self.symbol_table[label] - 1
+    
     def jal_func(self, rd, label):
         self.registers[int(rd[1:])] = self.pc
         self.pc = self.symbol_table[label] - 1
-    
+
     def ret_func(self):
         self.pc = self.registers[1]
 
 
 simulator = riscv_simulator()
 simulator.load_program("test.txt")
-simulator.is_debugging = True
+simulator.is_debugging = False
 simulator.preprocess()
 simulator.execute_program()
-# simulator.print_registers()
-if simulator.is_debugging:
-    simulator.print_stack(32)
-    simulator.print_registers()
+
+simulator.print_stack(32)
+simulator.print_registers()
